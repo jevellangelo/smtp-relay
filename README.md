@@ -46,7 +46,7 @@ smtp-relay/
 **1. Clone the repo**
 
 ```bash
-git clone https://github.com/yourusername/smtp-relay.git
+git clone https://github.com/jevellangelo/smtp-relay.git
 cd smtp-relay
 ```
 
