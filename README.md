@@ -11,7 +11,7 @@ A lightweight, containerized Postfix SMTP relay that authenticates to Microsoft 
 
 ## Why Alpine
 
-Ubuntu and Debian-based Postfix images run the outbound `smtp` process in a chroot jail, which prevents DNS resolution inside containers. Alpine avoids this entirely with one targeted `master.cf` change — see [the chroot note](#important-masterdf-change) below.
+Ubuntu and Debian-based Postfix images run the outbound `smtp` process in a chroot jail, which prevents DNS resolution inside containers. Alpine avoids this entirely with one targeted `master.cf` change — see [the chroot note](#important-mastercf-change) below.
 
 ## Prerequisites
 
