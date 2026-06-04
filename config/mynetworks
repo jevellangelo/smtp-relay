@@ -1,0 +1,11 @@
+# Include all network masks allowed to send mail through Postfix
+# Uses CIDR format with OK — no postmap required (cidr: map type)
+#
+# Examples:
+# 203.0.113.10/32 OK      # home or office public IP
+# 198.51.100.5/32 OK      # secondary server or VPS
+# 172.16.0.0/12 OK        # internal LAN (use with caution)
+# 100.64.0.0/10 OK        # Netbird overlay network (uncomment if using Netbird)
+#
+# Replace these with your actual trusted IPs:
+203.0.113.10/32 OK

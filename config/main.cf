@@ -1,0 +1,70 @@
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+
+compatibility_level = 3.6
+
+smtpd_banner = $myhostname ESMTP $mail_name
+
+# New mail notifications aren't necessary on a relay box
+biff = no
+
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
+
+# Your relay's FQDN — must match the TLS certificate CN/SAN
+myhostname = relay.yourdomain.com
+
+# Disable local alias lookup — not needed on a relay box
+alias_maps =
+alias_database =
+
+# Set the origin and destination
+myorigin = /etc/mailname
+mydestination = localhost.localdomain, localhost
+
+# Some mailbox settings
+mailbox_size_limit = 0
+recipient_delimiter = +
+
+# Listen on all interfaces and both IPv4/IPv6
+inet_interfaces = all
+inet_protocols = all
+
+# Map files
+# cidr: and texthash: are used instead of hash: — Alpine has no postfix-hash package
+# texthash: reads plain text files directly, no postmap required
+mynetworks = cidr:/etc/postfix/mynetworks
+transport_maps = texthash:/etc/postfix/transport
+header_checks = pcre:/etc/postfix/header_checks
+
+# 150MB message size limit (matches Exchange Online)
+message_size_limit = 157286400
+
+# Relay restrictions — allow mynetworks, reject everything else
+smtpd_relay_restrictions =
+    permit_mynetworks permit_sasl_authenticated reject_unauth_destination
+
+# SMTPD TLS Settings (for receiving inbound connections)
+smtpd_tls_security_level = may
+smtpd_tls_auth_only = yes
+smtpd_tls_key_file = /etc/letsencrypt/live/relay.yourdomain.com/privkey.pem
+smtpd_tls_cert_file = /etc/letsencrypt/live/relay.yourdomain.com/fullchain.pem
+smtpd_tls_dh1024_param_file = /etc/postfix/dh2048.pem
+smtpd_tls_protocols = !SSLv3, !SSLv2, !TLSv1, !TLSv1.1
+smtpd_tls_ciphers = high
+smtpd_tls_exclude_ciphers = aNULL, MD5, EXPORT
+smtpd_tls_mandatory_protocols = $smtpd_tls_protocols
+smtpd_tls_mandatory_ciphers = $smtpd_tls_ciphers
+smtpd_tls_mandatory_exclude_ciphers = $smtpd_tls_exclude_ciphers
+smtpd_tls_received_header = yes
+smtpd_tls_session_cache_timeout = 3600s
+tls_preempt_cipherlist = no
+tls_random_source = dev:/dev/urandom
+
+# SMTP TLS Settings (for outbound connections to M365)
+smtp_tls_policy_maps = texthash:/etc/postfix/tls_policy
+smtp_tls_cert_file = /etc/letsencrypt/live/relay.yourdomain.com/fullchain.pem
+smtp_tls_key_file = /etc/letsencrypt/live/relay.yourdomain.com/privkey.pem
+smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
+
+# Route logs to stdout so Docker captures them via docker compose logs
+maillog_file = /dev/stdout

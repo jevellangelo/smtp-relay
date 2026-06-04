@@ -1,0 +1,35 @@
+# Ubuntu-based Dockerfile — reference only
+# This version has DNS resolution issues due to Postfix chroot on Ubuntu/Debian.
+# The outbound smtp process runs chrooted and cannot access /etc/resolv.conf,
+# causing all outbound DNS lookups to fail silently.
+# Use the Alpine-based Dockerfile instead.
+
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y \
+    postfix \
+    postfix-pcre \
+    openssl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY config/main.cf /etc/postfix/main.cf
+COPY config/master.cf /etc/postfix/master.cf
+COPY config/mynetworks /etc/postfix/mynetworks
+COPY config/transport /etc/postfix/transport
+COPY config/tls_policy /etc/postfix/tls_policy
+COPY config/header_checks /etc/postfix/header_checks
+
+RUN echo "yourdomain.com" > /etc/mailname
+
+# Ubuntu/Debian use hash: map type — requires postmap
+# Alpine uses texthash: which does not require postmap
+RUN postmap /etc/postfix/mynetworks && \
+    postmap /etc/postfix/tls_policy && \
+    postmap /etc/postfix/transport
+
+RUN openssl dhparam -out /etc/postfix/dh2048.pem 2048
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+CMD ["/entrypoint.sh"]

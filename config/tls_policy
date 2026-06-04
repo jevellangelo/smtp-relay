@@ -1,0 +1,7 @@
+# TLS policy map — enforces TLS encryption on outbound connections to M365
+#
+# encrypt = Postfix will refuse to deliver if TLS is unavailable
+# Add one entry per M365 domain's MX endpoint
+
+[yourdomain-com.mail.protection.outlook.com]:25 encrypt
+[domain2-com.mail.protection.outlook.com]:25 encrypt

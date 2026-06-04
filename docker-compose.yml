@@ -1,0 +1,31 @@
+services:
+  certbot:
+    image: certbot/dns-cloudflare
+    volumes:
+      - certs:/etc/letsencrypt
+      - ./cloudflare.ini:/cloudflare.ini:ro
+    command: >
+      certonly
+      --dns-cloudflare
+      --dns-cloudflare-credentials /cloudflare.ini
+      --non-interactive
+      --agree-tos
+      -m admin@yourdomain.com
+      -d relay.yourdomain.com
+
+  postfix:
+    build: .
+    # network_mode: host is required — M365 SMTP endpoints publish IPv6 (AAAA) records.
+    # Docker's default bridge network does not expose the host's IPv6 stack to containers,
+    # causing DNS resolution failures. Host networking gives the container direct access
+    # to the VPS's IPv6 address. Port mappings are not needed with host networking.
+    network_mode: host
+    depends_on:
+      certbot:
+        condition: service_completed_successfully
+    volumes:
+      - certs:/etc/letsencrypt:ro
+    restart: unless-stopped
+
+volumes:
+  certs:

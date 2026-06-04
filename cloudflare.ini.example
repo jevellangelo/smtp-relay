@@ -1,0 +1,3 @@
+# Cloudflare API token with DNS:Edit permissions for your zone
+# Copy this file to cloudflare.ini, fill in your token, and chmod 600 cloudflare.ini
+dns_cloudflare_api_token = <your-cloudflare-api-token>

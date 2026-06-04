@@ -1,0 +1,14 @@
+# Cloudflare credentials — never commit this
+cloudflare.ini
+
+# macOS
+.DS_Store
+__MACOSX/
+
+# Environment files
+.env
+*.env
+
+# Docker build artifacts
+*.db
+*.lmdb

@@ -1,0 +1,21 @@
+# Transport map — routes outbound mail to the correct M365 MX endpoint
+#
+# Format: domain :[mx-hostname]:port
+# Brackets suppress MX lookup — Postfix connects directly to the host
+# Dots in domain names become dashes in the .mail.protection.outlook.com hostname
+#   e.g. yourdomain.com → yourdomain-com.mail.protection.outlook.com
+#
+# Add one entry per accepted domain in your M365 tenant.
+# The wildcard * catches everything not explicitly listed.
+#
+# To route personal Microsoft accounts (outlook.com, hotmail.com, live.com) via
+# direct MX delivery instead of your M365 business endpoint, add:
+#   outlook.com :[]
+#   hotmail.com :[]
+#   live.com    :[]
+# before the wildcard. Without this, delivery to personal @outlook.com addresses
+# will fail with "451 4.4.62 Mail sent to the wrong Office 365 region".
+
+yourdomain.com :[yourdomain-com.mail.protection.outlook.com]:25
+domain2.com    :[domain2-com.mail.protection.outlook.com]:25
+*              :[yourdomain-com.mail.protection.outlook.com]:25

@@ -1,0 +1,21 @@
+# PCRE header checks — prepends headers that tell Exchange Online to treat
+# relayed mail as internal rather than anonymous/external.
+#
+# This affects mail flow rules, junk filtering, and sender display in Outlook
+# for recipients within your M365 tenant.
+#
+# IMPORTANT: These headers must be stripped for mail going to external recipients.
+# Create two Exchange Online transport rules via PowerShell:
+#
+#   New-TransportRule -Name "Strip AuthAs Header for External Recipients" `
+#       -SentToScope "NotInOrganization" `
+#       -RemoveHeader "X-MS-Exchange-CrossPremises-AuthAs"
+#
+#   New-TransportRule -Name "Strip AuthSource Header for External Recipients" `
+#       -SentToScope "NotInOrganization" `
+#       -RemoveHeader "X-MS-Exchange-CrossPremises-AuthSource"
+#
+# Replace relay.yourdomain.com with your actual relay hostname.
+
+/^To:/i PREPEND X-MS-Exchange-CrossPremises-AuthAs: Internal
+/^From:/i PREPEND X-MS-Exchange-CrossPremises-AuthSource: relay.yourdomain.com
